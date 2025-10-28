@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     ppr: true,
+    // Mark AI SDK packages as external for proper Datadog instrumentation
+    serverComponentsExternalPackages: [
+      "ai",
+      "@ai-sdk/google",
+      "@ai-sdk/openai",
+      "@ai-sdk/xai",
+      "dd-trace",
+      "@datadog/libdatadog",
+    ],
   },
   images: {
     remotePatterns: [
