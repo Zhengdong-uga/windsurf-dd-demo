@@ -1,11 +1,11 @@
 {
-  "name": "ai-chatbot",
+  "name": "windsurf-dd-demo",
   "version": "3.1.0",
   "private": true,
   "scripts": {
-    "dev": "mkdir -p .cache && NODE_OPTIONS=\"--experimental-webstorage --localstorage-file=$PWD/.cache/localstorage.json\" next dev --turbo",
+    "dev": "mkdir -p .cache && DOTENV_CONFIG_PATH=.env.local NODE_OPTIONS=\"--require dotenv/config --import dd-trace/initialize.mjs --experimental-webstorage --localstorage-file=$PWD/.cache/localstorage.json\" next dev",
     "build": "tsx lib/db/migrate && next build",
-    "start": "next start",
+    "start": "DOTENV_CONFIG_PATH=.env.local NODE_OPTIONS=\"--require dotenv/config --import dd-trace/initialize.mjs\" next start",
     "lint": "npx ultracite@latest check",
     "format": "npx ultracite@latest fix",
     "db:generate": "drizzle-kit generate",
@@ -48,6 +48,7 @@
     "clsx": "^2.1.1",
     "codemirror": "^6.0.1",
     "date-fns": "^4.1.0",
+    "dd-trace": "^5.74.0",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.34.0",
