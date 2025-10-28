@@ -11,8 +11,8 @@
     }
   ],
   "env": {
-    "OPENAI_API_KEY": {
-      "description": "Your OpenAI API key from https://platform.openai.com/account/api-keys",
+    "GOOGLE_GENERATIVE_AI_API_KEY": {
+      "description": "Your Google Generative AI API key from https://aistudio.google.com/app/apikey",
       "type": "secret"
     },
     "AUTH_SECRET": {

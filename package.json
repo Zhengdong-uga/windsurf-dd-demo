@@ -3,7 +3,7 @@
   "version": "3.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "mkdir -p .cache && NODE_OPTIONS=\"--experimental-webstorage --localstorage-file=$PWD/.cache/localstorage.json\" next dev --turbo",
     "build": "tsx lib/db/migrate && next build",
     "start": "next start",
     "lint": "npx ultracite@latest check",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ai-sdk/gateway": "^1.0.15",
+    "@ai-sdk/google": "^2.0.24",
     "@ai-sdk/openai": "^2.0.56",
     "@ai-sdk/provider": "2.0.0",
     "@ai-sdk/react": "2.0.26",

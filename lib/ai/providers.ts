@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import {
   customProvider,
   extractReasoningMiddleware,
@@ -8,29 +8,29 @@ import { isTestEnvironment } from "../constants";
 
 export const myProvider = isTestEnvironment
   ? (() => {
-      const {
-        artifactModel,
-        chatModel,
-        reasoningModel,
-        titleModel,
-      } = require("./models.mock");
+      const { chatModel, reasoningModel } = require("./models.mock");
       return customProvider({
         languageModels: {
           "chat-model": chatModel,
           "chat-model-reasoning": reasoningModel,
-          "title-model": titleModel,
-          "artifact-model": artifactModel,
         },
       });
     })()
-  : customProvider({
-      languageModels: {
-        "chat-model": openai("gpt-4o"),
-        "chat-model-reasoning": wrapLanguageModel({
-          model: openai("o1-mini"),
-          middleware: extractReasoningMiddleware({ tagName: "think" }),
-        }),
-        "title-model": openai("gpt-4o-mini"),
-        "artifact-model": openai("gpt-4o"),
-      },
-    });
+  : (() => {
+      const geminiFlash = google("gemini-2.5-flash");
+      const geminiFlashLite = google("gemini-2.5-flash-lite");
+
+      return customProvider({
+        languageModels: {
+          "chat-model": geminiFlash,
+          "chat-model-reasoning": wrapLanguageModel({
+            model: geminiFlash,
+            middleware: extractReasoningMiddleware({ tagName: "think" }),
+          }),
+          "title-model": geminiFlashLite,
+          "artifact-model": geminiFlash,
+          "chat-model-gemini-flash": geminiFlash,
+          "chat-model-gemini-flash-lite": geminiFlashLite,
+        },
+      });
+    })();
