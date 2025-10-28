@@ -6,6 +6,13 @@ import {
 } from "ai";
 import { isTestEnvironment } from "../constants";
 
+// Use direct Google providers for Datadog LLM Observability auto-instrumentation
+// customProvider breaks telemetry chain, so we define models directly
+const geminiFlash = google("gemini-2.5-flash");
+const geminiFlashLite = google("gemini-2.5-flash-lite");
+
+// Create a simple provider interface that returns the models directly
+// This maintains API compatibility while enabling Datadog auto-instrumentation
 export const myProvider = isTestEnvironment
   ? (() => {
       const { chatModel, reasoningModel } = require("./models.mock");
@@ -16,21 +23,23 @@ export const myProvider = isTestEnvironment
         },
       });
     })()
-  : (() => {
-      const geminiFlash = google("gemini-2.5-flash");
-      const geminiFlashLite = google("gemini-2.5-flash-lite");
-
-      return customProvider({
-        languageModels: {
-          "chat-model": geminiFlash,
-          "chat-model-reasoning": wrapLanguageModel({
-            model: geminiFlash,
-            middleware: extractReasoningMiddleware({ tagName: "think" }),
-          }),
-          "title-model": geminiFlashLite,
-          "artifact-model": geminiFlash,
-          "chat-model-gemini-flash": geminiFlash,
-          "chat-model-gemini-flash-lite": geminiFlashLite,
-        },
-      });
-    })();
+  : {
+      languageModel: (id: string) => {
+        switch (id) {
+          case "chat-model":
+          case "chat-model-gemini-flash":
+          case "artifact-model":
+            return geminiFlash;
+          case "chat-model-reasoning":
+            return wrapLanguageModel({
+              model: geminiFlash,
+              middleware: extractReasoningMiddleware({ tagName: "think" }),
+            });
+          case "title-model":
+          case "chat-model-gemini-flash-lite":
+            return geminiFlashLite;
+          default:
+            return geminiFlash;
+        }
+      },
+    };
