@@ -53,6 +53,7 @@ The instrumentation is configured in `instrumentation.ts` using the `dd-trace` p
 ## Model Providers
 
 This template uses [OpenAI](https://openai.com) models via the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction). The default configuration includes:
+
 - **GPT-4o** for main chat interactions
 - **o1-mini** for reasoning tasks
 - **GPT-4o-mini** for title generation

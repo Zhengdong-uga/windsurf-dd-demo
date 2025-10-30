@@ -9,19 +9,17 @@ export type ChatModel = {
 export const chatModels: ChatModel[] = [
   {
     id: "chat-model",
-    name: "Gemini 2.5 Flash",
-    description: "Fast and versatile multimodal model for diverse tasks",
+    name: "GPT-4o",
+    description: "OpenAI flagship multimodal model for diverse tasks",
   },
   {
     id: "chat-model-reasoning",
-    name: "Gemini 2.5 Flash (Reasoning)",
-    description:
-      "Gemini 2.5 Flash with enhanced chain-of-thought reasoning capabilities",
+    name: "o1-mini (Reasoning)",
+    description: "OpenAI lightweight reasoning model for chain-of-thought tasks",
   },
   {
     id: "chat-model-gemini-flash-lite",
-    name: "Gemini 2.5 Flash Lite",
-    description:
-      "Balanced, low-latency model optimized for speed and efficiency",
+    name: "GPT-4o-mini",
+    description: "OpenAI fast, low-latency model optimized for speed and cost",
   },
 ];

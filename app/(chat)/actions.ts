@@ -20,21 +20,33 @@ export async function generateTitleFromUserMessage({
 }: {
   message: UIMessage;
 }) {
-  const { text: title } = await generateText({
-    model: myProvider.languageModel("title-model"),
-    system: `\n
-    - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 80 characters long
-    - the title should be a summary of the user's message
-    - do not use quotes or colons`,
-    prompt: JSON.stringify(message),
-    experimental_telemetry: {
-      isEnabled: true,
-      functionId: "generate-title",
-    },
-  });
+  try {
+    const { text: title } = await generateText({
+      model: myProvider.languageModel("title-model"),
+      system: `
+      - you will generate a short title based on the first message a user begins a conversation with
+      - ensure it is not more than 80 characters long
+      - the title should be a summary of the user's message
+      - do not use quotes or colons`,
+      prompt: JSON.stringify(message),
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: "generate-title",
+      },
+    });
 
-  return title;
+    return title;
+  } catch (_err) {
+    // Fallback: derive a simple local title from the message content
+    try {
+      const raw = typeof message?.content === "string" ? message.content : JSON.stringify(message?.content ?? "");
+      const compact = raw.replace(/\s+/g, " ").trim();
+      const sliced = compact.slice(0, 80);
+      return sliced.length > 0 ? sliced : "New Chat";
+    } catch {
+      return "New Chat";
+    }
+  }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

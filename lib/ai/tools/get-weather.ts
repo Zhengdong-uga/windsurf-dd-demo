@@ -26,21 +26,30 @@ async function geocodeCity(city: string): Promise<{ latitude: number; longitude:
 }
 
 export const getWeather = tool({
-  description: "Get the current weather at a location. You can provide either coordinates or a city name.",
-  inputSchema: z.union([
-    z.object({
-      latitude: z.number(),
-      longitude: z.number(),
-    }),
-    z.object({
-      city: z.string().describe("City name (e.g., 'San Francisco', 'New York', 'London')"),
-    }),
-  ]),
+  description: "Get the current weather at a location. Provide either a city OR both latitude and longitude.",
+  inputSchema: z
+    .object({
+      city: z
+        .string()
+        .describe("City name (e.g., 'San Francisco', 'New York', 'London')")
+        .optional(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+    .refine(
+      (v) =>
+        (typeof v.city === "string" && v.city.length > 0 && v.latitude === undefined && v.longitude === undefined) ||
+        (v.city === undefined && typeof v.latitude === "number" && typeof v.longitude === "number"),
+      {
+        message:
+          "Provide either { city } or both { latitude, longitude } (but not a mix).",
+      }
+    ),
   execute: async (input) => {
     let latitude: number;
     let longitude: number;
 
-    if ("city" in input) {
+    if (input.city) {
       const coords = await geocodeCity(input.city);
       if (!coords) {
         return {
@@ -50,8 +59,9 @@ export const getWeather = tool({
       latitude = coords.latitude;
       longitude = coords.longitude;
     } else {
-      latitude = input.latitude;
-      longitude = input.longitude;
+      // At this point, refinement ensures both latitude and longitude exist
+      latitude = input.latitude as number;
+      longitude = input.longitude as number;
     }
 
     const response = await fetch(
@@ -59,11 +69,11 @@ export const getWeather = tool({
     );
 
     const weatherData = await response.json();
-    
-    if ("city" in input) {
-      weatherData.cityName = input.city;
+
+    if (input.city) {
+      (weatherData as any).cityName = input.city;
     }
-    
+
     return weatherData;
   },
 });
